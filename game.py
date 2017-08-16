@@ -27,9 +27,6 @@ class Game:
                     matrix=self.board[i:i+5,j:j+5]
                     temp=(matrix*line).sum()
                     if temp==5 or temp==-5:
-                        # print("win pos=("+str(i)+","+str(j)+")")
-                        # print(matrix)
-                        # print(line)
                         return int(temp/5)
 
         for i in range(self.h-5):
@@ -38,9 +35,6 @@ class Game:
                     matrix=self.board[i:i+5,j:j+1]
                     temp=(matrix*line).sum()
                     if temp==5 or temp==-5:
-                        # print("win pos=("+str(i)+","+str(j)+")")
-                        # print(matrix)
-                        # print(line)
                         return int(temp/5)
 
         for i in range(self.h):
@@ -49,9 +43,6 @@ class Game:
                     matrix=self.board[i:i+1,j:j+5]
                     temp=(matrix*line).sum()
                     if temp==5 or temp==-5:
-                        # print("win pos=("+str(i)+","+str(j)+")")
-                        # print(matrix)
-                        # print(line)
                         return int(temp/5)
 
         return 0
@@ -64,11 +55,9 @@ class Game:
             for j in range(self.w):
                 if self.board[i][j]==0:
                     lst.append((i,j,self.who_step))
-
         return random.choice(lst)
 
     def start(self,who_step=1):
-
         while True:
             full=self.isFull()
             win=self.isWin()
@@ -98,7 +87,6 @@ class Game:
                 else:
                     print("  0",end="")
             print()
-
         print("--------------------------")
 
 game=Game()
