@@ -1,12 +1,13 @@
 import random
 
+
 class Brain:
-    probability=0.1
-    def __init__(self):
-        pass
+    probability=0.5
+    def __init__(self,probability=0.5):
+        self.probability=probability
 
     def step(self,game):
-        if random.random()<0.1:
+        if random.random()<self.probability:
             lst = []
             for i in range(game.h):
                 for j in range(game.w):
@@ -16,5 +17,3 @@ class Brain:
         else:
             # 只能选择
             pass
-
-

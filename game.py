@@ -1,8 +1,8 @@
 import numpy as np
 import random
 from brain import Brain
+from record import Record
 
-print(np.__version__)
 class Game:
     board=None
     w=15
@@ -10,11 +10,15 @@ class Game:
     steps=None
     who_step=1
     brain=None
-
+    record=None
     def __init__(self,brain):
-        self.board=np.zeros((self.w,self.h)).astype('int')
-        self.steps=[]
+        self.init()
         self.brain=brain
+        self.record=Record()
+
+    def init(self):
+        self.board = np.zeros((self.w, self.h)).astype('int')
+        self.steps = []
 
     def is_win(self):
         line1=np.ones((5,1)).astype('int')
@@ -54,16 +58,20 @@ class Game:
     def step(self):
         return self.brain.step(self)
 
-    def start(self,who_step=1):
+    def start(self,who_step=1,verbose=0):
+        self.init()
+
         self.who_step=who_step
         while True:
             full=self.is_full()
             win=self.is_win()
             if full or win:
                 if full:
-                    print("draw.")
+                    if verbose==1:
+                        print("draw.")
                 if win:
-                    print(str(win)+" win.")
+                    if verbose == 1:
+                        print(str(win)+" win.")
                 break
 
             s=self.step()
@@ -71,9 +79,13 @@ class Game:
             self.steps.append(s)
             self.who_step*=-1
 
-            self.print()
+            if verbose == 1:
+                self.print()
 
-        print("game over.")
+        self.record.save(self.steps)
+
+        if verbose == 1:
+            print("game over.")
 
     def print(self):
         for i in range(self.h):
@@ -87,7 +99,7 @@ class Game:
             print()
         print("----------------------------------------------------")
 
-brain=Brain()
+brain=Brain(1)
 
 game=Game(brain)
 # game.board[0][0]=-1
@@ -96,8 +108,11 @@ game=Game(brain)
 # game.board[3][3]=-1
 # game.board[4][4]=-1
 
-game.start()
+# for i in range(10000):
+#     game.start()
+#     print("epochs =",i)
 
 # print(game.isWin())
 # print(game.isFull())
+
 
