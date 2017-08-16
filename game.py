@@ -1,5 +1,6 @@
 import numpy as np
 import random
+from brain import Brain
 
 print(np.__version__)
 class Game:
@@ -8,18 +9,18 @@ class Game:
     h=15
     steps=None
     who_step=1
+    brain=None
 
-    def __init__(self):
+    def __init__(self,brain):
         self.board=np.zeros((self.w,self.h)).astype('int')
         self.steps=[]
+        self.brain=brain
 
-    def isWin(self):
+    def is_win(self):
         line1=np.ones((5,1)).astype('int')
         line2=np.ones((1,5)).astype('int')
         line3=np.eye(5).astype('int')
         line4=np.fliplr(line3)
-
-        lines=np.array([line1,line2,line3,line4])
 
         for i in range(self.h-5):
             for j in range(self.w-5):
@@ -46,21 +47,18 @@ class Game:
                         return int(temp/5)
 
         return 0
-    def isFull(self):
+
+    def is_full(self):
         return (self.board==0).sum()==0
 
     def step(self):
-        lst=[]
-        for i in range(self.h):
-            for j in range(self.w):
-                if self.board[i][j]==0:
-                    lst.append((i,j,self.who_step))
-        return random.choice(lst)
+        return self.brain.step(self)
 
     def start(self,who_step=1):
+        self.who_step=who_step
         while True:
-            full=self.isFull()
-            win=self.isWin()
+            full=self.is_full()
+            win=self.is_win()
             if full or win:
                 if full:
                     print("draw.")
@@ -87,9 +85,11 @@ class Game:
                 else:
                     print("  0",end="")
             print()
-        print("--------------------------")
+        print("----------------------------------------------------")
 
-game=Game()
+brain=Brain()
+
+game=Game(brain)
 # game.board[0][0]=-1
 # game.board[1][1]=-1
 # game.board[2][2]=-1
