@@ -2,7 +2,7 @@ import numpy as np
 import random
 from brain import Brain
 from record import Record
-from learn import l
+from learn import Learn
 
 class Game:
     board=None
@@ -12,6 +12,7 @@ class Game:
     who_step=1
     brain=None
     record=None
+    learn=None
     def __init__(self,brain):
         self.init()
         self.brain=brain
@@ -20,6 +21,7 @@ class Game:
     def init(self):
         self.board = np.zeros((self.w, self.h)).astype('int')
         self.steps = []
+        self.learn=Learn()
 
     def is_win(self):
         line1=np.ones((5,1)).astype('int')
@@ -96,8 +98,7 @@ class Game:
         elif step_num>=100:
             epochs=30
 
-        l.learn("003", batch_size=100, total_batch=100, epochs=epochs, step_num=225,only_learn_num_0=True)
-
+        self.learn.learn("003", batch_size=100, total_batch=100, epochs=epochs, step_num=225,only_learn_num_0=True)
 
     def print(self):
         for i in range(self.h):

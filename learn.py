@@ -12,7 +12,6 @@ class Learn:
 
     def learn(self,model_name,batch_size=1000,total_batch=1000,epochs=10,step_num=225,only_learn_num_0=False):
         self.record=Record()
-        # random.seed(1337)
 
         model,weights_path=eval('self.build_model_'+model_name+'(model_name)')
 

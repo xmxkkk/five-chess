@@ -61,6 +61,89 @@ class Record:
                 i += 1
 
     ''''''
+    def load_feature(self,pageNo=0,pageSize=100,epochs=10):
+        datas = self.db.query("select * from step order by learn_num asc,step_num asc,chess_id asc limit " + str(pageNo * pageSize) + "," + str(pageSize))
+
+        dct={}
+        X=[]
+        y=[]
+        for row in datas:
+            data = json.loads(row[2])
+            data = np.array(data)
+            winner=data[-1][-1]
+
+            for no in range(2,8):
+                line1 = np.ones((no, 1)).astype('int')
+                line2 = np.ones((1, no)).astype('int')
+                line3 = np.eye(no).astype('int')
+                line4 = np.fliplr(line3)
+
+                for i in range(15-no):
+                    for j in range(15-no):
+                        for line in np.array([line3, line4]):
+                            matrix = data[i:i + no, j:j + no]
+                            style=matrix * line
+                            if str(style) in dct.keys():
+                                dct[str(style)]+=winner
+                            else:
+                                dct[str(style)] =winner
+
+                for i in range(15-no):
+                    for j in range(15):
+                        for line in np.array([line1]):
+                            matrix = data[i:i + no, j:j + 1]
+                            style = matrix * line
+                            if str(style) in dct.keys():
+                                dct[str(style)]+=winner
+                            else:
+                                dct[str(style)] =winner
+
+                for i in range(15):
+                    for j in range(15-no):
+                        for line in np.array([line2]):
+                            matrix = data[i:i + 1, j:j + no]
+                            style = matrix * line
+                            if str(style) in dct.keys():
+                                dct[str(style)]+=winner
+                            else:
+                                dct[str(style)] =winner
+
+                data=data*-1
+                for i in range(15-no):
+                    for j in range(15-no):
+                        for line in np.array([line3, line4]):
+                            matrix = data[i:i + no, j:j + no]
+                            style=matrix * line
+                            if str(style) in dct.keys():
+                                dct[str(style)]+=-winner
+                            else:
+                                dct[str(style)] =-winner
+
+                for i in range(15-no):
+                    for j in range(15):
+                        for line in np.array([line1]):
+                            matrix = data[i:i + no, j:j + 1]
+                            style = matrix * line
+                            if str(style) in dct.keys():
+                                dct[str(style)]+=-row[4]
+                            else:
+                                dct[str(style)] =-row[4]
+
+                for i in range(15):
+                    for j in range(15-no):
+                        for line in np.array([line2]):
+                            matrix = data[i:i + 1, j:j + no]
+                            style = matrix * line
+                            if str(style) in dct.keys():
+                                dct[str(style)]+=-winner
+                            else:
+                                dct[str(style)] =-winner
+
+            y.append(row[4])
+        for k,v in dct.items():
+            if v>0:
+                print(k,'=',v)
+        return
     def load(self,pageNo=0,pageSize=100,epochs=10,step_num=225,only_learn_num_0=False):
         if only_learn_num_0:
             data=self.db.query("select count(1) from step where learn_num=0 and step_num<"+str(step_num))
@@ -101,3 +184,5 @@ class Record:
 
         return np.array(result),np.array(y)
 
+record=Record()
+record.load_feature(0,100)
