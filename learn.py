@@ -10,14 +10,17 @@ import numpy as np
 class Learn:
     record=None
 
-    def learn(self,model_name,batch_size=1000,total_batch=1000,epochs=10):
+    def learn(self,model_name,batch_size=1000,total_batch=1000,epochs=10,step_num=225,only_learn_num_0=False):
         self.record=Record()
-        random.seed(1337)
+        # random.seed(1337)
 
         model,weights_path=eval('self.build_model_'+model_name+'(model_name)')
 
         for i in range(total_batch):
-            X,y=self.record.load(i,batch_size,epochs=epochs)
+            X,y=self.record.load(i,batch_size,epochs=epochs,step_num=step_num,only_learn_num_0=only_learn_num_0)
+            if X is None:
+                break
+
             model.fit(X,y,batch_size=len(y),epochs=epochs,verbose=1)
             model.save_weights(weights_path)
 
@@ -113,7 +116,7 @@ class Learn:
 
 l=Learn()
 
-# l.learn("003",batch_size=1000,total_batch=1000,epochs=2)
+# l.learn("003",batch_size=1000,total_batch=1000,epochs=2,step_num=120)
 
 board=np.zeros((15,15))
 board[0][0]=1
@@ -126,4 +129,4 @@ board[1][2]=-1
 board[1][3]=-1
 
 # print(l.predict("001",board,1))# (11, 13, 1)
-# print(l.predict("003",board,1))# (11, 13, 1)
+print(l.predict("003",board,1))# (11, 13, 1)

@@ -61,16 +61,31 @@ class Record:
                 i += 1
 
     ''''''
-    def load(self,pageNo=0,pageSize=100,epochs=0,step_num=90):
+    def load(self,pageNo=0,pageSize=100,epochs=10,step_num=225,only_learn_num_0=False):
+        if only_learn_num_0:
+            data=self.db.query("select count(1) from step where learn_num=0 and step_num<"+str(step_num))
+        else:
+            data = self.db.query("select count(1) from step where step_num<" + str(step_num))
 
-        data=self.db.query("select count(1) from step where step_num<"+str(step_num))
         cnt=data[0][0]
+
+        if cnt==0:
+            return None,None
+
         maxPageSize=int(cnt/pageSize)
 
-        pageNo = pageNo % maxPageSize
+        if maxPageSize==0:
+            pageSize=cnt
+            pageNo=0
+        else:
+            pageNo = pageNo % maxPageSize
 
-        datas=self.db.query("select * from step where step_num<"+str(step_num)+" order by learn_num asc,step_num asc,chess_id asc limit "+str(pageNo*pageSize)+","+str(pageSize))
-
+        if only_learn_num_0:
+           datas=self.db.query("select * from step where step_num<"+str(step_num)+" order by learn_num asc,step_num asc,chess_id asc limit "+str(pageNo*pageSize)+","+str(pageSize))
+        else:
+            datas = self.db.query("select * from step where learn_num=0 and step_num<" + str(
+                step_num) + " order by learn_num asc,step_num asc,chess_id asc limit " + str(
+                pageNo * pageSize) + "," + str(pageSize))
         result=[]
         y=[]
 

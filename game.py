@@ -2,6 +2,7 @@ import numpy as np
 import random
 from brain import Brain
 from record import Record
+from learn import l
 
 class Game:
     board=None
@@ -87,6 +88,17 @@ class Game:
         if verbose == 1:
             print("game over.step_num = ",len(self.steps))
 
+        step_num=len(self.steps)
+        if step_num<=50:
+            epochs=100
+        elif step_num>50 and step_num<100:
+            epochs=50
+        elif step_num>=100:
+            epochs=30
+
+        l.learn("003", batch_size=100, total_batch=100, epochs=epochs, step_num=225,only_learn_num_0=True)
+
+
     def print(self):
         for i in range(self.h):
             for j in range(self.w):
@@ -108,7 +120,8 @@ game=Game(brain)
 # game.board[3][3]=-1
 # game.board[4][4]=-1
 
-game.start(1,1)
+for i in range(100):
+    game.start(1,1)
 
 # for i in range(10000):
 #     game.start()
