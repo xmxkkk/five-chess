@@ -82,10 +82,10 @@ class Game:
             if verbose == 1:
                 self.print()
 
-        self.record.save(self.steps)
+        self.record.save_chess(self.steps)
 
         if verbose == 1:
-            print("game over.")
+            print("game over.step_num = ",len(self.steps))
 
     def print(self):
         for i in range(self.h):
@@ -107,6 +107,8 @@ game=Game(brain)
 # game.board[2][2]=-1
 # game.board[3][3]=-1
 # game.board[4][4]=-1
+
+game.start(1,1)
 
 # for i in range(10000):
 #     game.start()
