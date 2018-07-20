@@ -11,7 +11,7 @@
  Target Server Version : 50722
  File Encoding         : utf-8
 
- Date: 07/19/2018 18:49:41 PM
+ Date: 07/20/2018 13:54:55 PM
 */
 
 SET NAMES utf8;
@@ -30,7 +30,7 @@ CREATE TABLE `chess` (
   `step_num` int(11) DEFAULT NULL,
   `num` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1851 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=2210 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 --  Table structure for `step`
@@ -47,7 +47,12 @@ CREATE TABLE `step` (
   `learn_num` int(11) DEFAULT NULL,
   `step_pos` varchar(10) DEFAULT NULL,
   `add_shape` varchar(255) DEFAULT NULL,
-  `add_score` double(20,8) DEFAULT NULL
+  `add_score` double(20,8) DEFAULT NULL,
+  `board1` varchar(255) DEFAULT NULL,
+  `board2` varchar(255) DEFAULT NULL,
+  `board3` text,
+  `board4` text,
+  `board5` text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 SET FOREIGN_KEY_CHECKS = 1;

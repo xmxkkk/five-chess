@@ -2,6 +2,14 @@ from db import Db
 import json
 import hashlib
 import numpy as np
+from sklearn.preprocessing import Normalizer
+
+def padwithtens(vector, pad_width, iaxis, kwargs):
+    vector[:pad_width[0]] = -99999
+    vector[-pad_width[1]:] = -99999
+    return vector
+
+
 
 class Record:
     db=None
@@ -33,7 +41,8 @@ class Record:
 
         board_no=-99999
 
-        i=0
+        pow_idx=0
+        idx=0
         size=len(steps)
 
         pre_score=0
@@ -92,48 +101,41 @@ class Record:
 
             lines = [line0, line1, line2, line3, line4, line5, line6, line7]
 
+            newboard = np.pad(board, 5, padwithtens)
+
+            newx=step[0]+5
+            newy=step[1]+5
+
+            boards=[]
+            for i in range(1,6):
+                boards.append(newboard[newx-i:newx+i+1,newy-i:newy+i+1].tolist())
+
             boardStr=json.dumps(board)
             boardStrMd5 = hashlib.md5(boardStr.encode("utf-8")).hexdigest()
 
-            score=(1000000*winner/size)*(0.9**(size-i-1))
+            score=(1000000*winner/size)*(0.9**(size-pow_idx-1))
 
             if pre_score>0:
                 add_score=score-pre_score
             else:
                 add_score=0
 
-            self.db.update('insert into step (chess_id,board,md5,score,idx,create_time,step_num,step_pos,add_shape,add_score'
-                           ') values (%s,%s,%s,'
-                           '%s,%s,now(),%s,%s,%s,%s)'
-                           ,[str(row[0]),boardStr,boardStrMd5,str(score),str(i),str(len(steps))
+            self.db.update('insert into step (chess_id,board,md5,score,idx,create_time,step_num,step_pos,add_shape,'
+                           +'add_score,board1,board2,board3,board4,board5)'
+                           +'values '
+                           +'(%s,%s,%s,%s,%s,now(),%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+                           ,[str(row[0]),boardStr,boardStrMd5,str(score),str(idx),str(len(steps))
                             ,json.dumps([step[0],step[1]])
                              ,json.dumps(lines)
-                             ,str(add_score)])
+                             ,str(add_score)
+                             ,json.dumps(boards[0]),json.dumps(boards[1]),json.dumps(boards[2]),json.dumps(boards[3])
+                               , json.dumps(boards[4])])
 
             pre_score = score
 
-            i+=1
-    def dev_chess(self):
-        datas=self.db.query('select * from chess where is_dev=0 order by step_num asc')
-        for row in datas:
-            chess_id=row[0]
-            steps=json.loads(row[1])
-            winner=steps[-1][-1]
-            if winner==0:
-                return
+            pow_idx+=1
+            idx+=1
 
-            scores=np.linspace(0,winner,len(steps))
-            i = 0
-            for step in steps:
-                board = [[0 for i in range(15)] for j in range(15)]
-                board[step[0]][step[1]] = step[2]
-                boardStr = json.dumps(board)
-                boardStrMd5 = hashlib.md5(boardStr.encode("utf-8")).hexdigest()
-                self.db.update(
-                    'insert into step (chess_id,board,md5,score,idx,create_time,step_pos) values (%s,%s,%s,%s,%s,'
-                    'now(),%s)',
-                    [str(row[0]), boardStr, boardStrMd5, str(scores[i]), str(i), json.dumps([step[0],step[1]])])
-                i += 1
 
     ''''''
     def load(self,pageNo=0,pageSize=100):
@@ -158,14 +160,31 @@ class Record:
         y=[]
 
         ids=[]
-
+        board1=[]
+        board2=[]
+        board3=[]
+        board4=[]
+        board5=[]
         for row in datas:
             data=json.loads(row[9])
             result.append(data)
             y.append(row[10])
+            board1.append(json.loads(row[11]))
+            board2.append(json.loads(row[12]))
+            board3.append(json.loads(row[13]))
+            board4.append(json.loads(row[14]))
+            board5.append(json.loads(row[15]))
+
             ids.append(str(row[0]))
 
         # self.db.update('update step set learn_num=learn_num+'+str(epochs)+' where id in ('+','.join(ids)+')')
 
-        return np.array(result),np.array(y)
+        y = np.array(y,dtype='float32')
+        y = Normalizer().fit_transform([y])
+
+        y = y[0][:, np.newaxis]
+
+        return np.array(result,dtype='float32'),np.array(board1,dtype='float32'),np.array(board2,dtype='float32'),np.array(board3,dtype='float32'),np.array(board4,dtype='float32'),\
+               np.array(board5,dtype='float32'),y\
+
 
