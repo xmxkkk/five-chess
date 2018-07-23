@@ -1,8 +1,6 @@
 import numpy as np
-import random
 from record import Record
-from player import PlayerFirst
-from util import random_step
+from model.player_first.player import Player
 
 class Game:
     board=None
@@ -102,8 +100,8 @@ class Game:
             print()
         print("----------------------------------------------------")
 
-player_a=PlayerFirst(1,0.8,"./model/player_first/model1/model.ckpt",step_type=0,step_top_n=3)
-player_b=PlayerFirst(-1,0.8,"./model/player_first/model2/model.ckpt",step_type=0,step_top_n=3)
+player_a=Player(1,0.8,"./model/player_first/model1/model.ckpt",step_type=0,step_top_n=3)
+player_b=Player(-1,0.8,"./model/player_first/model2/model.ckpt",step_type=0,step_top_n=3)
 
 game=Game("pos_model",player_a,player_b)
 

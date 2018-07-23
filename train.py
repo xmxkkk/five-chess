@@ -1,7 +1,7 @@
-from player import PlayerFirst
+from model.player_first.player import Player
 import numpy as np
 
-player=PlayerFirst(who_step=1,random_probability=1.0,weight_name="./model/player_first/model1/model.ckpt",step_type=1,
+player=Player(who_step=1,random_probability=1.0,weight_name="./model/player_first/model1/model.ckpt",step_type=1,
                    step_top_n=1)
 player.load_data(model_name=None,shuffle=True)
 
