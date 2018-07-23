@@ -4,6 +4,7 @@ import hashlib
 import numpy as np
 from sklearn.preprocessing import Normalizer
 from util import padwithtens,handle,board_line8,board_shape,norm_y
+import random
 
 class Record:
     db=None
@@ -13,8 +14,15 @@ class Record:
     def save_chess(self,steps,model_name):
         winner=steps[-1][-1]
 
-        if winner<=0:
+
+        if winner==0:
             return
+        newsteps=[]
+        if winner<0:
+            for step in steps:
+                newsteps.append((step[0],step[1],step[2]*-1))
+            winner=winner*-1
+            steps=newsteps
 
         jsonStr=json.dumps(steps)
         # print(type(jsonStr))
@@ -72,7 +80,7 @@ class Record:
             idx+=1
 
     ''''''
-    def load(self,pageNo=0,pageSize=100,model_name=None):
+    def load(self,pageNo=0,pageSize=100,model_name=None,shuffle=False):
         if model_name is None:
             data = self.db.query("select count(1) from step where score>0")
         else:
@@ -82,6 +90,9 @@ class Record:
 
         if cnt==0:
             return None,None
+
+        if shuffle:
+            random.shuffle(data)
 
         maxPageSize=int(cnt/pageSize)
 

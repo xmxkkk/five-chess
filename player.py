@@ -7,20 +7,30 @@ from util import padwithtens,handle,norm_y,board_shape,board_line8,board_data,ra
     board1_learn,board2_learn,board3_learn,board4_learn,board5_learn
 
 class Player:
-    def __init__(self,who_step,random_probability=0.9,weight_name=None):
+    def __init__(self,who_step,random_probability=0.9,weight_name=None,step_type=0,step_top_n=5):
+        '''
+
+        :param who_step:
+        :param random_probability:
+        :param weight_name:
+        :param step_type: 0=top,1=best
+        :param step_top_n:
+        '''
         self.random_probability=random_probability
         self.who_step=who_step
         self.weight_name=weight_name
         self.sess = None
         self.saver = None
+        self.step_type = step_type
+        self.step_top_n = step_top_n
 
         with tf.Graph().as_default():
             self._load_model()
             self.load_session()
 
-    def load_data(self,model_name=None):
+    def load_data(self,model_name=None,shuffle=False):
         record=Record()
-        self.x,self.board1,self.board2,self.board3,self.board4,self.board5,self.y=record.load(0,100000,model_name)
+        self.x,self.board1,self.board2,self.board3,self.board4,self.board5,self.y=record.load(0,100000,model_name,shuffle)
 
     def _load_model(self):
         self.x_input = tf.placeholder(tf.float32, shape=(None, 8, 5))
@@ -70,10 +80,8 @@ class Player:
 
         self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
 
-    def train(self):
-        test_len=300
-        batch_size=100
-        epochs=1000
+    def train(self,epochs=100,batch_size=100,test_data_size=300):
+        test_len=test_data_size
 
         n_split = len(self.x) - test_len
 
@@ -189,16 +197,18 @@ class Player:
 
         if self.random_probability>random.random():
             result=self.predict(board)
-            stepss=random.choice(result[0:5])
+
+            if self.step_type==0:
+                stepss=random.choice(result[0:self.step_top_n])
+            elif self.step_type==1:
+                stepss=result[0]
             return (stepss["step"][0],stepss["step"][1],self.who_step)
 
         return random_step(board,self.who_step)
     
 
-player=Player(1,1.0,"./model/model1/model.ckpt")
-player.load_data(None)
-# playerb=Player(-1,1.0,"pos_model","./model/model1/model.ckpt")
-player.train()
+
+
 '''
 board_list=[
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],

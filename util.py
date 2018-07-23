@@ -8,7 +8,6 @@ def line_learn(input_shape):
     dense2 = tf.layers.dense(dense1, 128, activation=tf.nn.sigmoid, use_bias=False)
     return tf.layers.dense(dense2, 1, use_bias=False)
 
-
 def board1_learn(input_shape):
     reshape1 = tf.expand_dims(input_shape, -1)
     conv1 = tf.layers.conv2d(reshape1, 32, kernel_size=3, strides=1, padding='same', activation=None)
@@ -19,7 +18,6 @@ def board1_learn(input_shape):
     flatten1 = tf.layers.flatten(conv3)
     dense1 = tf.layers.dense(flatten1, 1)
     return dense1
-
 
 def board2_learn(input_shape):
     reshape1 = tf.expand_dims(input_shape, -1)
@@ -32,7 +30,6 @@ def board2_learn(input_shape):
     flatten1 = tf.layers.flatten(conv4)
     dense1 = tf.layers.dense(flatten1, 1)
     return dense1
-
 
 def board3_learn(input_shape):
     reshape1 = tf.expand_dims(input_shape, -1)
@@ -50,7 +47,6 @@ def board3_learn(input_shape):
     dense1 = tf.layers.dense(flatten1, 1)
     return dense1
 
-
 def board4_learn(input_shape):
     reshape1 = tf.expand_dims(input_shape, -1)
     conv1 = tf.layers.conv2d(reshape1, 32, kernel_size=3, strides=1, padding='same', activation=None)
@@ -66,7 +62,6 @@ def board4_learn(input_shape):
     flatten1 = tf.layers.flatten(conv6)
     dense1 = tf.layers.dense(flatten1, 1)
     return dense1
-
 
 def board5_learn(input_shape):
     reshape1 = tf.expand_dims(input_shape, -1)

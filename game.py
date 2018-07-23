@@ -11,8 +11,9 @@ class Game:
     steps=None
     who_step=1
     record=None
-    def __init__(self,player_a,player_b):
+    def __init__(self,model_name,player_a,player_b):
         self.init()
+        self.model_name=model_name
         self.player_a=player_a
         self.player_b=player_b
         self.record=Record()
@@ -84,7 +85,7 @@ class Game:
             if verbose == 1:
                 self.print()
 
-        self.record.save_chess(self.steps,player_a.model_name)
+        self.record.save_chess(self.steps,self.model_name)
 
         if verbose == 1:
             print("game over.step_num = ",len(self.steps))
@@ -101,13 +102,13 @@ class Game:
             print()
         print("----------------------------------------------------")
 
-player_a=Player(1,0.8,"pos_model","./model/model1/model.ckpt")
-player_b=Player(-1,0.5,"pos_model","./model/model2/model.ckpt")
+player_a=Player(1,0.8,"./model/model1/model.ckpt",step_type=0,step_top_n=3)
+player_b=Player(-1,0.8,"./model/model2/model.ckpt",step_type=0,step_top_n=3)
 
-game=Game(player_a,player_b)
+game=Game("pos_model",player_a,player_b)
 
-for i in range(1000):
-    game.start(1,0)
+for i in range(1):
+    game.start(1,1)
     print("no.{}".format(i))
 
 # for i in range(10000):

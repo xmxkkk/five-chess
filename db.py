@@ -2,7 +2,7 @@ import pymysql as MySQLdb
 
 host='localhost'
 user='root'
-passwd=''
+passwd='6232'
 port=3306
 dbname='five'
 
