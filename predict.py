@@ -1,14 +1,15 @@
 import numpy as np
 import tensorflow as tf
+from util import padwithtens,handle,board_line8,board_shape
 
 board_list=[
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0,-1,-1,-1,-1, 1, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0,-1, 1, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0,-1, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -18,13 +19,6 @@ board_list=[
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 ]
-
-def padwithtens(vector, pad_width, iaxis, kwargs):
-    vector[:pad_width[0]] = -99999
-    vector[-pad_width[1]:] = -99999
-    return vector
-
-
 board=np.array(board_list)
 
 board_no=-99999
@@ -51,64 +45,9 @@ for i in range(15):
 
             oldboard=board.copy()
             board[i,j]=1
-            line0 = [board[step[0]][step[1]],
-                     board[step[0]][step[1] + 1] if step[1] + 1 < 15 else board_no,
-                     board[step[0]][step[1] + 2] if step[1] + 2 < 15 else board_no,
-                     board[step[0]][step[1] + 3] if step[1] + 3 < 15 else board_no,
-                     board[step[0]][step[1] + 4] if step[1] + 4 < 15 else board_no]
 
-            line1 = [board[step[0]][step[1]],
-                     board[step[0]][step[1] - 1] if step[1] - 1 > 0 else board_no,
-                     board[step[0]][step[1] - 2] if step[1] - 2 > 0 else board_no,
-                     board[step[0]][step[1] - 3] if step[1] - 3 > 0 else board_no,
-                     board[step[0]][step[1] - 4] if step[1] - 4 > 0 else board_no]
-
-            line2 = [board[step[0]][step[1]],
-                     board[step[0] + 1][step[1]] if step[0] + 1 < 15 else board_no,
-                     board[step[0] + 2][step[1]] if step[0] + 2 < 15 else board_no,
-                     board[step[0] + 3][step[1]] if step[0] + 3 < 15 else board_no,
-                     board[step[0] + 4][step[1]] if step[0] + 4 < 15 else board_no]
-
-            line3 = [board[step[0]][step[1]],
-                     board[step[0] - 1][step[1]] if step[0] - 1 > 0 else board_no,
-                     board[step[0] - 2][step[1]] if step[0] - 1 > 0 else board_no,
-                     board[step[0] - 3][step[1]] if step[0] - 1 > 0 else board_no,
-                     board[step[0] - 4][step[1]] if step[0] - 1 > 0 else board_no]
-
-            line4 = [board[step[0]][step[1]],
-                     board[step[0] - 1][step[1] - 1] if step[0] - 1 > 0 and step[1] - 1 > 0 else board_no,
-                     board[step[0] - 2][step[1] - 2] if step[0] - 2 > 0 and step[1] - 1 > 0 else board_no,
-                     board[step[0] - 3][step[1] - 3] if step[0] - 3 > 0 and step[1] - 1 > 0 else board_no,
-                     board[step[0] - 4][step[1] - 4] if step[0] - 4 > 0 and step[1] - 1 > 0 else board_no]
-
-            line5 = [board[step[0]][step[1]],
-                     board[step[0] - 1][step[1] + 1] if step[0] - 1 > 0 and step[1] + 1 < 15 else board_no,
-                     board[step[0] - 2][step[1] + 2] if step[0] - 2 > 0 and step[1] + 2 < 15 else board_no,
-                     board[step[0] - 3][step[1] + 3] if step[0] - 3 > 0 and step[1] + 3 < 15 else board_no,
-                     board[step[0] - 4][step[1] + 4] if step[0] - 4 > 0 and step[1] + 4 < 15 else board_no]
-
-            line6 = [board[step[0]][step[1]],
-                     board[step[0] + 1][step[1] - 1] if step[0] + 1 < 15 and step[1] - 1 > 0 else board_no,
-                     board[step[0] + 2][step[1] - 2] if step[0] + 2 < 15 and step[1] - 2 > 0 else board_no,
-                     board[step[0] + 3][step[1] - 3] if step[0] + 3 < 15 and step[1] - 3 > 0 else board_no,
-                     board[step[0] + 4][step[1] - 4] if step[0] + 4 < 15 and step[1] - 4 > 0 else board_no]
-
-            line7 = [board[step[0]][step[1]],
-                     board[step[0] + 1][step[1] + 1] if step[0] + 1 < 15 and step[1] + 1 < 15 else board_no,
-                     board[step[0] + 2][step[1] + 2] if step[0] + 2 < 15 and step[1] + 2 < 15 else board_no,
-                     board[step[0] + 3][step[1] + 3] if step[0] + 3 < 15 and step[1] + 3 < 15 else board_no,
-                     board[step[0] + 4][step[1] + 4] if step[0] + 4 < 15 and step[1] + 4 < 15 else board_no]
-
-            lines = [line0, line1, line2, line3, line4, line5, line6, line7]
-
-            newboard = np.pad(board, 5, padwithtens)
-
-            newx = step[0] + 5
-            newy = step[1] + 5
-
-            boards = []
-            for i in range(1, 6):
-                boards.append(newboard[newx - i:newx + i + 1, newy - i:newy + i + 1].tolist())
+            lines=board_line8(board,step)
+            boards=board_shape(board,step)
 
             x.append(lines)
             board1.append(boards[0])
@@ -293,20 +232,6 @@ with tf.Session() as sess:
         board5_input: board5,
     })
 
-    # div0_val = np.abs(div0_val)
-    # div1_val = np.abs(div1_val)
-    # div2_val = np.abs(div2_val)
-    # div3_val = np.abs(div3_val)
-    # div4_val = np.abs(div4_val)
-    # div5_val = np.abs(div5_val)
-    # div6_val = np.abs(div6_val)
-    # div7_val = np.abs(div7_val)
-    #
-    # dense1_val = np.abs(dense1_val)
-    # dense2_val = np.abs(dense2_val)
-    # dense3_val = np.abs(dense3_val)
-    # dense4_val = np.abs(dense4_val)
-    # dense5_val = np.abs(dense5_val)
 
     div_val=div0_val+div1_val+div2_val+div3_val+div4_val+div5_val+div6_val+div7_val
 
@@ -314,7 +239,7 @@ with tf.Session() as sess:
 
     score=np.reshape(score, [-1, ])
     result_idx_max=np.argmax(score)
-    # result_idx_min = np.argmin(score)
+
     print(score)
     print(result_map[str(result_idx_max)])
-    # print(result_map[str(result_idx_min)])
+

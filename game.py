@@ -1,8 +1,8 @@
 import numpy as np
 import random
-from brain import Brain
 from record import Record
-# from learn import l
+from player import Player
+from util import random_step
 
 class Game:
     board=None
@@ -10,11 +10,11 @@ class Game:
     h=15
     steps=None
     who_step=1
-    brain=None
     record=None
-    def __init__(self,brain):
+    def __init__(self,player_a,player_b):
         self.init()
-        self.brain=brain
+        self.player_a=player_a
+        self.player_b=player_b
         self.record=Record()
 
     def init(self):
@@ -56,9 +56,6 @@ class Game:
     def is_full(self):
         return (self.board==0).sum()==0
 
-    def step(self):
-        return self.brain.step(self)
-
     def start(self,who_step=1,verbose=0):
         self.init()
 
@@ -75,7 +72,11 @@ class Game:
                         print(str(win)+" win.")
                 break
 
-            s=self.step()
+            if self.who_step==1:
+                s=self.player_a.step(self.board)
+            else:
+                s=self.player_b.step(self.board)
+
             self.board[s[0]][s[1]]=s[2]
             self.steps.append(s)
             self.who_step*=-1
@@ -83,7 +84,7 @@ class Game:
             if verbose == 1:
                 self.print()
 
-        self.record.save_chess(self.steps)
+        self.record.save_chess(self.steps,player_a.model_name)
 
         if verbose == 1:
             print("game over.step_num = ",len(self.steps))
@@ -100,14 +101,10 @@ class Game:
             print()
         print("----------------------------------------------------")
 
-brain=Brain(1.0)
+player_a=Player(1,0.8,"pos_model","./model/model1/model.ckpt")
+player_b=Player(-1,0.5,"pos_model","./model/model2/model.ckpt")
 
-game=Game(brain)
-# game.board[0][0]=-1
-# game.board[1][1]=-1
-# game.board[2][2]=-1
-# game.board[3][3]=-1
-# game.board[4][4]=-1
+game=Game(player_a,player_b)
 
 for i in range(1000):
     game.start(1,0)
