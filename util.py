@@ -13,7 +13,7 @@ def board1_learn(input_shape):
     conv1 = tf.layers.conv2d(reshape1, 32, kernel_size=3, strides=1, padding='same', activation=None)
     conv2 = tf.layers.conv2d(conv1, 32, kernel_size=3, strides=1, padding='same', activation='relu')
     batch1 = tf.layers.batch_normalization(conv2)
-    conv3 = tf.layers.conv2d(batch1, 64, kernel_size=3, strides=1, padding='same', activation=None)
+    conv3 = tf.layers.conv2d(batch1, 64, kernel_size=3, strides=1, padding='same', activation='relu')
 
     flatten1 = tf.layers.flatten(conv3)
     dense1 = tf.layers.dense(flatten1, 1)
@@ -25,7 +25,7 @@ def board2_learn(input_shape):
     conv2 = tf.layers.conv2d(conv1, 32, kernel_size=3, strides=1, padding='same', activation='relu')
     batch1 = tf.layers.batch_normalization(conv2)
     conv3 = tf.layers.conv2d(batch1, 64, kernel_size=3, strides=1, padding='same', activation='relu')
-    conv4 = tf.layers.conv2d(conv3, 64, kernel_size=3, strides=1, padding='same', activation=None)
+    conv4 = tf.layers.conv2d(conv3, 64, kernel_size=3, strides=1, padding='same', activation='relu')
 
     flatten1 = tf.layers.flatten(conv4)
     dense1 = tf.layers.dense(flatten1, 1)
@@ -41,7 +41,7 @@ def board3_learn(input_shape):
     conv4 = tf.layers.conv2d(conv3, 64, kernel_size=3, strides=1, padding='same', activation='relu')
 
     batch2 = tf.layers.batch_normalization(conv4)
-    conv5 = tf.layers.conv2d(batch2, 128, kernel_size=3, strides=1, padding='same', activation=None)
+    conv5 = tf.layers.conv2d(batch2, 128, kernel_size=3, strides=1, padding='same', activation='relu')
 
     flatten1 = tf.layers.flatten(conv5)
     dense1 = tf.layers.dense(flatten1, 1)
@@ -57,7 +57,7 @@ def board4_learn(input_shape):
 
     batch2 = tf.layers.batch_normalization(conv4)
     conv5 = tf.layers.conv2d(batch2, 128, kernel_size=3, strides=1, padding='same', activation='relu')
-    conv6 = tf.layers.conv2d(conv5, 128, kernel_size=3, strides=1, padding='same', activation=None)
+    conv6 = tf.layers.conv2d(conv5, 128, kernel_size=3, strides=1, padding='same', activation='relu')
 
     flatten1 = tf.layers.flatten(conv6)
     dense1 = tf.layers.dense(flatten1, 1)
@@ -73,7 +73,7 @@ def board5_learn(input_shape):
 
     batch2 = tf.layers.batch_normalization(conv4)
     conv5 = tf.layers.conv2d(batch2, 128, kernel_size=3, strides=1, padding='same', activation='relu')
-    conv6 = tf.layers.conv2d(conv5, 128, kernel_size=3, strides=1, padding='same', activation=None)
+    conv6 = tf.layers.conv2d(conv5, 128, kernel_size=3, strides=1, padding='same', activation='relu')
 
     flatten1 = tf.layers.flatten(conv6)
     dense1 = tf.layers.dense(flatten1, 1)
@@ -89,19 +89,6 @@ def random_step(board,who_step):
 
     return random.choice(lst)
 
-    # if len(game.steps) == 0:
-    #     return (7, 7, game.who_step)
-    #
-    # if self.probability < random.random():
-    #     return self.learn.predict("003", game.board, game.who_step)
-    # else:
-    #     lst = []
-    #     for i in range(game.h):
-    #         for j in range(game.w):
-    #             if game.board[i][j] == 0:
-    #                 lst.append((i, j, game.who_step))
-    #     return random.choice(lst)
-
 def padwithtens(vector, pad_width, iaxis, kwargs):
     vector[:pad_width[0]] = -99999
     vector[-pad_width[1]:] = -99999
@@ -112,7 +99,6 @@ def norm_y(y):
     y = Normalizer().fit_transform([y])
     y = y[0][:, np.newaxis]
     return y
-
 
 def handle(x):
     x[x==-99999]=0.1
