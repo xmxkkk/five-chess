@@ -73,7 +73,10 @@ class Record:
 
     ''''''
     def load(self,pageNo=0,pageSize=100,model_name=None):
-        data = self.db.query("select count(1) from step where score>0 and model_name='"+model_name+"'")
+        if model_name is None:
+            data = self.db.query("select count(1) from step where score>0")
+        else:
+            data = self.db.query("select count(1) from step where score>0 and model_name='"+model_name+"'")
 
         cnt=data[0][0]
 
@@ -112,12 +115,14 @@ class Record:
 
         # self.db.update('update step set learn_num=learn_num+'+str(epochs)+' where id in ('+','.join(ids)+')')
 
-        return handle(np.array(result,dtype='float32'))\
-            ,handle(np.array(board1,dtype='float32'))\
-            ,handle(np.array(board2,dtype='float32'))\
-            ,handle(np.array(board3,dtype='float32'))\
-            ,handle(np.array(board4,dtype='float32'))\
-            ,handle(np.array(board5,dtype='float32'))\
-            ,norm_y(y)
+        x=handle(np.array(result,dtype='float32'))
+        board1 = handle(np.array(board1,dtype='float32'))
+        board2 = handle(np.array(board2, dtype='float32'))
+        board3 = handle(np.array(board3, dtype='float32'))
+        board4 = handle(np.array(board4, dtype='float32'))
+        board5 = handle(np.array(board5, dtype='float32'))
+        y=norm_y(y)
+
+        return x,board1,board2,board3,board4,board5,y
 
 

@@ -7,10 +7,9 @@ from util import padwithtens,handle,norm_y,board_shape,board_line8,board_data,ra
     board1_learn,board2_learn,board3_learn,board4_learn,board5_learn
 
 class Player:
-    def __init__(self,who_step,random_probability=0.9,model_name=None,weight_name=None):
+    def __init__(self,who_step,random_probability=0.9,weight_name=None):
         self.random_probability=random_probability
         self.who_step=who_step
-        self.model_name=model_name
         self.weight_name=weight_name
         self.sess = None
         self.saver = None
@@ -19,7 +18,7 @@ class Player:
             self._load_model()
             self.load_session()
 
-    def _load_data(self,model_name):
+    def load_data(self,model_name=None):
         record=Record()
         self.x,self.board1,self.board2,self.board3,self.board4,self.board5,self.y=record.load(0,100000,model_name)
 
@@ -72,9 +71,11 @@ class Player:
         self.train_op = tf.train.AdamOptimizer().minimize(self.loss)
 
     def train(self):
-        self._load_data(self.model_name)
+        test_len=300
+        batch_size=100
+        epochs=1000
 
-        n_split = len(self.x) - 1000
+        n_split = len(self.x) - test_len
 
         x_train = self.x[:n_split]
         board1_train = self.board1[:n_split]
@@ -92,10 +93,10 @@ class Player:
         board5_test = self.board5[n_split:]
         y_test = self.y[n_split:]
 
-        for epoch in range(1000):
+        for epoch in range(epochs):
 
             total = len(x_train)
-            page_size = 1000
+            page_size = batch_size
             page_no = int(total / page_size)
 
             loss_total = 0
@@ -133,13 +134,13 @@ class Player:
                 self.saver.save(sess=self.sess, save_path=self.weight_name)
 
             _, val_loss_val = self.sess.run([self.train_op, self.loss], feed_dict={
-                self.x_input: x_test[:1000],
-                self.board1_input: board1_test[:1000],
-                self.board2_input: board2_test[:1000],
-                self.board3_input: board3_test[:1000],
-                self.board4_input: board4_test[:1000],
-                self.board5_input: board5_test[:1000],
-                self.output: y_test[:1000]
+                self.x_input: x_test[:test_len],
+                self.board1_input: board1_test[:test_len],
+                self.board2_input: board2_test[:test_len],
+                self.board3_input: board3_test[:test_len],
+                self.board4_input: board4_test[:test_len],
+                self.board5_input: board5_test[:test_len],
+                self.output: y_test[:test_len]
             })
             print("epoch={}     loss_val={:.4f}     val_loss_val={:.4f}".format(epoch, loss_total / page_no,
                                                                                     val_loss_val))
@@ -194,7 +195,8 @@ class Player:
         return random_step(board,self.who_step)
     
 
-player=Player(1,1.0,"pos_model","./model/model1/model.ckpt")
+player=Player(1,1.0,"./model/model1/model.ckpt")
+player.load_data(None)
 # playerb=Player(-1,1.0,"pos_model","./model/model1/model.ckpt")
 player.train()
 '''
