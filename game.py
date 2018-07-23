@@ -109,11 +109,3 @@ for i in range(1):
     game.start(1,1)
     print("no.{}".format(i))
 
-# for i in range(10000):
-#     game.start()
-#     print("epochs =",i)
-
-# print(game.isWin())
-# print(game.isFull())
-
-
