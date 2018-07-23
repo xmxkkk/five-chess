@@ -6,10 +6,9 @@ import os
 from util import padwithtens,handle,norm_y,board_shape,board_line8,board_data,random_step,line_learn,\
     board1_learn,board2_learn,board3_learn,board4_learn,board5_learn
 
-class Player:
+class PlayerFirst:
     def __init__(self,who_step,random_probability=0.9,weight_name=None,step_type=0,step_top_n=5):
         '''
-
         :param who_step:
         :param random_probability:
         :param weight_name:
@@ -158,9 +157,9 @@ class Player:
             self.saver = tf.train.Saver()
             self.sess=tf.Session()
             self.sess.run(tf.global_variables_initializer())
-            # self.saver.restore(sess=self.sess, save_path=self.weight_name)
+            self.saver.restore(sess=self.sess, save_path=self.weight_name)
 
-    def predict(self,board,reload=False):
+    def predict(self,board):
 
         result=[]
         self.result_map, x, board1, board2, board3, board4, board5 = board_data(board,self.who_step)

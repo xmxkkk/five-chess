@@ -66,13 +66,13 @@ class Record:
                            +'add_score,board1,board2,board3,board4,board5,model_name)'
                            +'values '
                            +'(%s,%s,%s,%s,%s,now(),%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
-                           ,[str(row[0]),boardStr,boardStrMd5,str(score),str(idx),str(len(steps))
+                            ,[str(row[0]),boardStr,boardStrMd5,str(score),str(idx),str(len(steps))
                             ,json.dumps([step[0],step[1]])
-                             ,json.dumps(lines)
-                             ,str(add_score)
-                             ,json.dumps(boards[0]),json.dumps(boards[1]),json.dumps(boards[2]),json.dumps(boards[3])
-                               , json.dumps(boards[4])
-                               , model_name])
+                            ,json.dumps(lines)
+                            ,str(add_score)
+                            ,json.dumps(boards[0]),json.dumps(boards[1]),json.dumps(boards[2]),json.dumps(boards[3])
+                            , json.dumps(boards[4])
+                            , model_name])
 
             pre_score = score
 
