@@ -3,8 +3,8 @@ import random
 import tensorflow as tf
 from record import Record
 import os
-from util import padwithtens,handle,norm_y,board_shape,board_line8,board_data,random_step,line_learn,\
-    board1_learn,board2_learn,board3_learn,board4_learn,board5_learn
+from util import padwithtens,handle,norm_y,board_shape,board_line8,board_data,random_step,line_learn
+from model.player_second.util import board1_learn,board2_learn,board3_learn,board4_learn,board5_learn
 
 class Player:
     def __init__(self,who_step,random_probability=0.9,weight_name=None,step_type=0,step_top_n=5):
@@ -74,6 +74,8 @@ class Player:
 
         self.dense5 = board5_learn(self.board5_input)
         board5_loss = tf.reduce_mean(tf.abs(self.dense5 - self.output), axis=-1)
+
+
 
         self.loss = tf.reduce_mean([x_loss, board1_loss, board2_loss, board3_loss, board4_loss, board5_loss])
 
@@ -157,7 +159,8 @@ class Player:
             self.saver = tf.train.Saver()
             self.sess=tf.Session()
             self.sess.run(tf.global_variables_initializer())
-            self.saver.restore(sess=self.sess, save_path=self.weight_name)
+            if os.path.exists(self.weight_name+'.meta'):
+                self.saver.restore(sess=self.sess, save_path=self.weight_name)
 
     def predict(self,board):
 

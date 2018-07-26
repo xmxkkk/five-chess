@@ -137,3 +137,29 @@ class Record:
         return x,board1,board2,board3,board4,board5,y
 
 
+    def load_2(self,pageNo=0,pageSize=100,model_name=None,shuffle=False):
+        if model_name is None:
+            data = self.db.query("select count(1) from step where score>0")
+        else:
+            data = self.db.query("select count(1) from step where score>0 and model_name='"+model_name+"'")
+
+        cnt=data[0][0]
+
+        if cnt==0:
+            return None,None
+
+        if shuffle:
+            random.shuffle(data)
+
+        maxPageSize=int(cnt/pageSize)
+
+        if maxPageSize==0:
+            pageSize=cnt
+            pageNo=0
+        else:
+            pageNo = pageNo % maxPageSize
+
+        datas = self.db.query("select * from step limit " + str(pageNo * pageSize) + "," + str(pageSize))
+
+
+

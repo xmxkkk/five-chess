@@ -157,7 +157,8 @@ class Player:
             self.saver = tf.train.Saver()
             self.sess=tf.Session()
             self.sess.run(tf.global_variables_initializer())
-            self.saver.restore(sess=self.sess, save_path=self.weight_name)
+            if os.path.exists(self.weight_name + '.meta'):
+                self.saver.restore(sess=self.sess, save_path=self.weight_name)
 
     def predict(self,board):
 
