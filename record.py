@@ -5,6 +5,7 @@ import numpy as np
 from sklearn.preprocessing import Normalizer
 from util import padwithtens,handle,board_line8,board_shape,norm_y
 import random
+import copy
 
 class Record:
     db=None
@@ -31,7 +32,9 @@ class Record:
 
         row=self.db.query('select * from chess where md5=%s',md5)
         if row is None:
-            self.db.update('insert into chess (steps,md5,create_time,winner,step_num) values (%s,%s,now(),%s,%s)',[jsonStr,md5,winner,len(steps)])
+            self.db.update('insert into chess (steps,md5,create_time,winner,step_num,model_name) values (%s,%s,now(),'
+                           '%s,%s,%s)',
+                           [jsonStr,md5,winner,len(steps),model_name])
         else:
             self.db.update('update chess set num=num+1 where md5=%s',md5)
 
@@ -139,6 +142,66 @@ class Record:
 
     def load_2(self,pageNo=0,pageSize=100,model_name=None,shuffle=False):
         if model_name is None:
+            data = self.db.query("select count(1) from chess")
+        else:
+            data = self.db.query("select count(1) from chess where model_name='"+model_name+"'")
+
+        cnt=data[0][0]
+
+        if cnt==0:
+            return None,None
+
+        if shuffle:
+            random.shuffle(data)
+
+        maxPageSize=int(cnt/pageSize)
+
+        if maxPageSize==0:
+            pageSize=cnt
+            pageNo=0
+        else:
+            pageNo = pageNo % maxPageSize
+
+        datas = self.db.query("select * from chess limit " + str(pageNo * pageSize) + "," + str(pageSize))
+
+        x_result=[]
+        y_result=[]
+        for row in datas:
+            steps=json.loads(row[1])
+
+            if len(steps)>225 or row[4]==0:
+                continue
+
+            board_data=[]
+            board = [[0 for i in range(15)] for j in range(15)]
+            for step in steps:
+                board[step[0]][step[1]]=step[2]
+                board_data.append(np.array(copy.deepcopy(board)).flatten().tolist())
+
+            board = [[0 for i in range(15)] for j in range(15)]
+            for i in range(225-len(steps)):
+                board_data.append(np.array(board).flatten().tolist())
+
+            x_result.append(board_data)
+            y_result.append(row[4])
+
+            board_data = []
+            board = [[0 for i in range(15)] for j in range(15)]
+            for step in steps:
+                board[step[0]][step[1]] = step[2]*-1
+                board_data.append(np.array(copy.deepcopy(board)).flatten().tolist())
+
+            board = [[0 for i in range(15)] for j in range(15)]
+            for i in range(225 - len(steps)):
+                board_data.append(np.array(board).flatten().tolist())
+
+            x_result.append(board_data)
+            y_result.append(row[4]*-1)
+
+        return np.array(x_result),np.array(y_result)
+
+    def load_3(self,pageNo=0,pageSize=100,model_name=None,shuffle=False):
+        if model_name is None:
             data = self.db.query("select count(1) from step where score>0")
         else:
             data = self.db.query("select count(1) from step where score>0 and model_name='"+model_name+"'")
@@ -161,5 +224,17 @@ class Record:
 
         datas = self.db.query("select * from step limit " + str(pageNo * pageSize) + "," + str(pageSize))
 
+        x_result=[]
+        y_result=[]
+        for row in datas:
+            x_result.append(json.loads(row[1]))
+            y_result.append(row[10])
 
+        return np.array(x_result),np.array(y_result)
 
+# r=Record()
+# x,y=r.load_3(0,2)
+# print(x.shape,y.shape)
+# print(x)
+# print(y)
+# np.savez_compressed('./data.npz',{x:x,y:y})
